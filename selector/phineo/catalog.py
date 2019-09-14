@@ -31,6 +31,7 @@ class Catalog:
         self.logger.debug(f"Total pages: {len(pages)}")
         rater = Rating()
         for page in pages:
+
             for project_url in self.get_projects(page):
 
                 project_id = hashlib.md5(project_url.encode('utf-8')).hexdigest()
@@ -38,11 +39,10 @@ class Catalog:
                 language = 'germany'
                 source = 'phineo'
                 source_site = 'https://www.phineo.org/'
-                teaser = self.project_teaser(url)
 
                 for extractor in self.get_metadata_extractors():
 
-                    res = extractor(url) # extraction performed here
+                    res = extractor(url)
 
                     if extractor.__name__ == 'wirk_image':
                         image = imutils.url_to_image(base_url + res)
@@ -78,7 +78,6 @@ class Catalog:
         return lst
 
     def get_metadata_extractors(self):
-        """TODO: Replace with introspection ..."""
         lst=[]
         lst.append(self.themen)
         lst.append(self.wirk_image)
@@ -88,6 +87,7 @@ class Catalog:
         lst.append(self.project_website)
         lst.append(self.title_main)
         lst.append(self.title_sub)
+        lst.append(self.project_image)
         return lst
 
 #########################################################################
@@ -187,17 +187,16 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return metadata
 
-    #@meta ### teaser comes from the main page
-    def project_teaser(self, url):
+    #@meta
+    def project_image(self, url):
         metadata = None
-        selector = '#searchresults > div:nth-child(2) > div.teaserImage.leftStyle.width_232 > a > img'
+        selector = '#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(2) > img'
         r = session.get(url)
         res = r.html.find(selector)
         if len(res) > 0:
             metadata = res[0].attrs.get("src")
-        self.logger.debug(f"*************** {res}")
+        self.logger.debug(f"*************** {metadata}")
         return metadata
-
 
     #@meta
     def long_description(self):

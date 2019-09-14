@@ -1,20 +1,26 @@
 import os
 import cv2
-from selector.phineo.parser import Catalog
+
 from selector.phineo.common import IMAGE_TYPE
-from selector.phineo.rating import LEISTUNGS_XCOORDS, leistungs_ycoords
-from selector.phineo.rating import ProjectRating
+from selector.phineo.rating import (
+    LEISTUNGS_XCOORDS,
+    leistungs_ycoords,
+    WIRKUNGS_XCOORDS,
+    wirkungs_ycoords,
+    Rating,
+)
+
 
 def test_check_image():
-    image = cv2.imread(os.path.join('data','leistung.jpg'))
+    image = cv2.imread(os.path.join("data", "leistung.jpg"))
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     (thresh, bw) = cv2.threshold(gray, 175, 255, cv2.THRESH_BINARY)
     assert 144 == bw.shape[0]
-    cv2.imshow('b/w image', bw)
+    cv2.imshow("b/w image", bw)
 
 
 def test_ratings_vision():
-    star = ProjectRating(os.path.join('data', 'leistung.jpg'), IMAGE_TYPE.LEISTUNG)
+    star = Rating(os.path.join("data", "leistung.jpg"), IMAGE_TYPE.LEISTUNG)
     rows = LEISTUNGS_XCOORDS
     cols = leistungs_ycoords
     ratings = star.get_ratings()
@@ -22,7 +28,7 @@ def test_ratings_vision():
 
 
 def test_ratings_leistung():
-    star = ProjectRating(os.path.join('data', 'leistung.jpg'), IMAGE_TYPE.LEISTUNG)
+    star = Rating(os.path.join("data", "leistung.jpg"), IMAGE_TYPE.LEISTUNG)
     rows = LEISTUNGS_XCOORDS
     cols = leistungs_ycoords
     ratings = star.get_ratings()
@@ -30,7 +36,7 @@ def test_ratings_leistung():
 
 
 def test_ratings_aufsichts():
-    star = ProjectRating(os.path.join('data', 'leistung.jpg'), IMAGE_TYPE.LEISTUNG)
+    star = Rating(os.path.join("data", "leistung.jpg"), IMAGE_TYPE.LEISTUNG)
     rows = LEISTUNGS_XCOORDS
     cols = leistungs_ycoords
     ratings = star.get_ratings()
@@ -38,7 +44,7 @@ def test_ratings_aufsichts():
 
 
 def test_ratings_leistung_finanzen():
-    star = ProjectRating(os.path.join('data', 'leistung.jpg'), IMAGE_TYPE.LEISTUNG)
+    star = Rating(os.path.join("data", "leistung.jpg"), IMAGE_TYPE.LEISTUNG)
     rows = LEISTUNGS_XCOORDS
     cols = leistungs_ycoords
     ratings = star.get_ratings()
@@ -46,14 +52,15 @@ def test_ratings_leistung_finanzen():
 
 
 def test_ratings_leistung_finanzierungs():
-    star = ProjectRating(os.path.join('data', 'leistung.jpg'), IMAGE_TYPE.LEISTUNG)
+    star = Rating(os.path.join("data", "leistung.jpg"), IMAGE_TYPE.LEISTUNG)
     rows = LEISTUNGS_XCOORDS
     cols = leistungs_ycoords
     ratings = star.get_ratings()
     assert ratings[LEISTUNGS_XCOORDS.FINANZIERUNGSKONZEPT] == 5
 
+
 def test_ratings_leistung_offentlich():
-    star = ProjectRating(os.path.join('data', 'leistung.jpg'), IMAGE_TYPE.LEISTUNG)
+    star = Rating(os.path.join("data", "leistung.jpg"), IMAGE_TYPE.LEISTUNG)
     rows = LEISTUNGS_XCOORDS
     cols = leistungs_ycoords
     ratings = star.get_ratings()
@@ -61,7 +68,7 @@ def test_ratings_leistung_offentlich():
 
 
 def test_ratings_wirk_konzept():
-    star = ProjectRating(os.path.join('data', 'wirk_img.jpg'), IMAGE_TYPE.WIRK)
+    star = Rating(os.path.join("data", "wirk_img.jpg"), IMAGE_TYPE.WIRK)
     rows = WIRKUNGS_XCOORDS
     cols = wirkungs_ycoords
     ratings = star.get_ratings()

@@ -5,6 +5,7 @@ import os
 import cv2
 from selector.phineo.common import IMAGE_TYPE
 
+
 class LEISTUNGS_XCOORDS(Enum):
     VISION = 10
     LEISTUNGS_GREMIUM = 35
@@ -12,18 +13,22 @@ class LEISTUNGS_XCOORDS(Enum):
     FINANZEN = 78
     FINANZIERUNGSKONZEPT = 105
     OFFENTLICHKEIT = 125
+
+
 # y coordinates
-leistungs_ycoords = [7,25,45,60,75]
+leistungs_ycoords = [7, 25, 45, 60, 75]
 
 
 class WIRKUNGS_XCOORDS(Enum):
     ZEILE = 10
     KONZEPT = 30
     QUALITAET = 50
-wirkungs_ycoords = [7,25,45,65,77]
 
-class ProjectRating:
 
+wirkungs_ycoords = [7, 25, 45, 65, 77]
+
+
+class Rating:
     def __init__(self, image_path, image_type, log_level=logging.ERROR):
         self.img_path = image_path
         self.star = image_type
@@ -45,7 +50,7 @@ class ProjectRating:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         min_white = 175
         max_white = 255
-        (thresh, bw) = cv2.threshold(gray, min_white , max_white, cv2.THRESH_BINARY)
+        (thresh, bw) = cv2.threshold(gray, min_white, max_white, cv2.THRESH_BINARY)
         return bw
 
     def get_ratings(self):
@@ -57,7 +62,7 @@ class ProjectRating:
         for x in row:
             rating = 0
             for y in col:
-                pixel = bw[x.value,y]
+                pixel = bw[x.value, y]
                 if pixel == 0:
                     rating = rating + 1
             ratings[x] = rating

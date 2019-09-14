@@ -59,7 +59,7 @@ def test_count_details_pages():
 
 def test_count_details_pages():
     catalog = Catalog()
-    res = catalog.details()
+    res = catalog.build()
     assert res == 250  # lost one, .. did not find the bug...but close enough...
 
 
@@ -76,3 +76,8 @@ def test_teaser_text():
     res = catalog.teaser_text(url)
     print(res)
     assert res == "http://www.bkj.de"
+
+def test_get_extractors():
+    catalog = Catalog()
+    res = catalog.get_extractors()
+    assert len(res) == 7

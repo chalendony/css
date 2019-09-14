@@ -1,13 +1,14 @@
+import hashlib
 import logging
 import sys
-import inspect
-import hashlib
 from collections import namedtuple
-from random import random
-from selector.phineo.rating import Rating
-from requests_html import HTMLSession
-from selector.phineo.common import IMAGE_TYPE
+
 import imutils
+import pandas as pd
+from requests_html import HTMLSession
+
+from selector.phineo.common import IMAGE_TYPE
+from selector.phineo.rating import Rating
 
 session = HTMLSession()
 
@@ -15,12 +16,10 @@ PROJ_PER_PAGE = 10
 last_page = 25
 base_url = "https://www.phineo.org/"
 
-"catalog_home", "catalog_language", "catalog_name",
-# project_id = hashlib.md5(project_url.encode('utf-8')).hexdigest()
-# url = base_url + project_url
-# language = 'germany'
-# source = 'phineo' landing page
-# source_site = 'https://www.phineo.org/'
+# catalog metadata
+language = "germany"
+source_name = "phineo"
+source_website = "https://www.phineo.org/"
 
 Entry = namedtuple(
     "Entry",
@@ -39,8 +38,8 @@ Entry = namedtuple(
     ],
 )
 
-
 class Catalog:
+
     def __init__(self, log_level=logging.ERROR):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(log_level)
@@ -49,34 +48,30 @@ class Catalog:
         self.ids = []
 
     def build(self):
-        count = 0
+        cat = []
         pages = self.list_all_pages()
         self.logger.debug(f"Total pages: {len(pages)}")
         rater = Rating()
         for page in pages:
-
             for project_url in self.get_projects(page):
-
-                id = hashlib.md5(project_url.encode("utf-8")).hexdigest()
+                id_m = hashlib.md5(project_url.encode("utf-8")).hexdigest()
                 url = base_url + project_url
-                language = "germany"
-                source = "phineo"
-                source_site = "https://www.phineo.org/"
+                name_m = self.name(url)
+                tagline_m = self.tagline(url)
+                mission_m = self.mission(url)
+                location_m = self.location(url)
+                geo_reach_m = self.geo_reach(url)
+                category_m = self.category(url)
+                img_rating = self.rating(url)
+                input_image = imutils.url_to_image(base_url + img_rating)
+                rating_m = rater.compute_ratings(input_image, IMAGE_TYPE.WIRK)
+                key_visual_m = self.key_visual(url)
+                target_group_m = self.target_group(url)
+                home_page_m = self.home_page(url)
 
-                for extractor in self.get_metadata_extractors():
-
-                    res = extractor(url)
-
-                    if extractor.__name__ == "wirk_image":
-                        image = imutils.url_to_image(base_url + res)
-                        ratings = rater.compute_ratings(image, IMAGE_TYPE.WIRK)
-                        self.logger.info(
-                            f"Extractor : {extractor.__name__} : {ratings}"
-                        )
-                    else:
-                        self.logger.info(f"Extractor : {extractor.__name__} : {res}")
-                self.logger.info(f"******************************************")
-        return count  ## TODO return dataframe
+                e = Entry(id, name_m,tagline_m,mission_m,location_m,geo_reach_m,category_m,rating_m,key_visual_m,target_group_m,home_page_m)
+                cat.append(e)
+        return cat
 
     def check_duplicated_ids(self):
         len(self.ids) != len(set(self.ids))
@@ -103,7 +98,6 @@ class Catalog:
 
     def get_metadata_extractors(self):
         lst = []
-
         lst.append(self.name)
         lst.append(self.tagline)
         lst.append(self.mission)

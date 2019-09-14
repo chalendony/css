@@ -32,17 +32,21 @@ class Catalog:
         rater = Rating()
         for page in pages:
             for project_url in self.get_projects(page):
+
                 project_id = hashlib.md5(project_url.encode('utf-8')).hexdigest()
                 url = base_url + project_url
+                language = 'germany'
+                source = 'phineo'
+                source_site = 'https://www.phineo.org/'
+                teaser = self.project_teaser(url)
+
                 for extractor in self.get_metadata_extractors():
-                    res = extractor(url)
+
+                    res = extractor(url) # extraction performed here
+
                     if extractor.__name__ == 'wirk_image':
                         image = imutils.url_to_image(base_url + res)
                         ratings = rater.compute_ratings(image, IMAGE_TYPE.WIRK)
-                        self.logger.info(f"Extractor : {extractor.__name__} : {ratings}")
-                    if extractor.__name__ == 'leistungs_image':
-                        image = imutils.url_to_image(base_url + res)
-                        ratings = rater.compute_ratings(image,IMAGE_TYPE.LEISTUNG)
                         self.logger.info(f"Extractor : {extractor.__name__} : {ratings}")
                     else:
                         self.logger.info(f"Extractor : {extractor.__name__} : {res}")
@@ -81,8 +85,9 @@ class Catalog:
         lst.append(self.zielgruppe)
         lst.append(self.standort)
         lst.append(self.auf_einen_blick)
-        lst.append(self.leistungs_image)
         lst.append(self.project_website)
+        lst.append(self.title_main)
+        lst.append(self.title_sub)
         return lst
 
 #########################################################################
@@ -141,7 +146,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    #@meta
+    #@meta # omit for now ...
     def leistungs_image(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(2) > div > img"
         r = session.get(url)
@@ -161,35 +166,41 @@ class Catalog:
         return metadata
 
     #@meta
-    def title(self):
-        pass
+    def title_main(self,url):
+        metadata = None
+        selector = '#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h1'
+        r = session.get(url)
+        res = r.html.find(selector)
+        if len(res) > 0:
+            metadata = res[0].text
+        self.logger.debug(f"*************** {res}")
+        return metadata
+
+    #@meta
+    def title_sub(self,url):
+        metadata = None
+        selector = '#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h2'
+        r = session.get(url)
+        res = r.html.find(selector)
+        if len(res) > 0:
+            metadata = res[0].text
+        self.logger.debug(f"*************** {res}")
+        return metadata
+
+    #@meta ### teaser comes from the main page
+    def project_teaser(self, url):
+        metadata = None
+        selector = '#searchresults > div:nth-child(2) > div.teaserImage.leftStyle.width_232 > a > img'
+        r = session.get(url)
+        res = r.html.find(selector)
+        if len(res) > 0:
+            metadata = res[0].attrs.get("src")
+        self.logger.debug(f"*************** {res}")
+        return metadata
+
 
     #@meta
     def long_description(self):
+        # TODO: Later
+        selector = '#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(4) > div.width_552.marginTop_12.marginRight_24 > div'
         pass
-
-    #@meta
-    def project_id(self):
-        pass
-
-    #@meta
-    def data_source(self):
-        pass
-
-    #@meta
-    def language(self):
-        pass
-
-    #@meta
-    def project_image(self):
-        pass
-
-    ### FUTURE: Data integration -
-
-    ## Standard language for scaling up, alias  multilingual
-
-    ## TODO: use the name as key in the datastrecture...
-
-    ## rename the whole thing to catalog...
-
-    ## put the other work into the css for future

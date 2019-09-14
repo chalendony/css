@@ -31,8 +31,6 @@ wirkungs_ycoords = [7, 25, 45, 65, 77]
 
 class Rating:
     def __init__(self, log_level=logging.ERROR):
-        # self.img_path = image_path
-        # self.star = image_type
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(log_level)
         self.handler = logging.StreamHandler(sys.stdout)
@@ -54,12 +52,12 @@ class Rating:
             rows = WIRKUNGS_XCOORDS
             cols = wirkungs_ycoords
         bw = self.to_black_white(data)
-        ratings = {}
+        res = {}
         for x in rows:
             rating = 0
             for y in cols:
                 pixel = bw[x.value, y]
                 if pixel == 0:
                     rating = rating + 1
-            ratings[x] = rating
-        return ratings
+            res[x] = rating
+        return res

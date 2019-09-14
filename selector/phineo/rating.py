@@ -26,40 +26,36 @@ wirkungs_ycoords = [7, 25, 45, 65, 77]
 
 
 class Rating:
-    def __init__(self, image_path, image_type, log_level=logging.ERROR):
-        self.img_path = image_path
-        self.star = image_type
+    def __init__(self, log_level=logging.ERROR):
+        #self.img_path = image_path
+        #self.star = image_type
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(log_level)
         self.handler = logging.StreamHandler(sys.stdout)
         self.logger.addHandler(self.handler)
-        if image_type == IMAGE_TYPE.LEISTUNG:
-            rows = LEISTUNGS_XCOORDS
-            cols = leistungs_ycoords
-            self.reputation = self.compute_ratings(rows, cols)
-        if image_type == IMAGE_TYPE.WIRK:
-            rows = WIRKUNGS_XCOORDS
-            cols = wirkungs_ycoords
-            self.reputation = self.compute_ratings(rows, cols)
 
-    def to_black_white(self):
-        self.logger.info(f"The image path...{self.img_path}")
-        image = cv2.imread(self.img_path)
+    def to_black_white(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         min_white = 175
         max_white = 255
         (thresh, bw) = cv2.threshold(gray, min_white, max_white, cv2.THRESH_BINARY)
         return bw
 
-    def get_ratings(self):
-        return self.reputation
+    # def get_ratings(self):
+    #     return self.reputation
 
-    def compute_ratings(self, row, col):
-        bw = self.to_black_white()
+    def compute_ratings(self, data, image_type):
+        if image_type == IMAGE_TYPE.LEISTUNG:
+            rows = LEISTUNGS_XCOORDS
+            cols = leistungs_ycoords
+        if image_type == IMAGE_TYPE.WIRK:
+            rows = WIRKUNGS_XCOORDS
+            cols = wirkungs_ycoords
+        bw = self.to_black_white(data)
         ratings = {}
-        for x in row:
+        for x in rows:
             rating = 0
-            for y in col:
+            for y in cols:
                 pixel = bw[x.value, y]
                 if pixel == 0:
                     rating = rating + 1

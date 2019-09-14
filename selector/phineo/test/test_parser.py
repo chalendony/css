@@ -1,4 +1,4 @@
-from phineo.parser import Parser
+from selector.phineo.parser import Parser
 url = 'https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25'
 
 
@@ -42,7 +42,6 @@ def test_wirk_image():
     parser = Parser()
     res = parser.wirk_image(url)
     assert ".jpg" == res[-4 :]
-
 
 def test_flipBoxPages():
     url = 'https://www.phineo.org/projekte'

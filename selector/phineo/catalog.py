@@ -144,3 +144,11 @@ class Catalog:
     @set_property
     def title(self):
         pass
+
+    @set_property
+    def long_description(self):
+        pass
+
+    @set_property
+    def project_id(self):
+        pass

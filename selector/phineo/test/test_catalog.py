@@ -79,5 +79,5 @@ def test_teaser_text():
 
 def test_get_extractors():
     catalog = Catalog()
-    res = catalog.get_extractors()
+    res = catalog.get_metadata_extractors()
     assert len(res) == 7

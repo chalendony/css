@@ -2,6 +2,7 @@ import logging
 import sys
 import inspect
 import hashlib
+from collections import namedtuple
 
 from requests_html import HTMLSession
 
@@ -11,10 +12,13 @@ PROJ_PER_PAGE = 10
 last_page = 25
 base_url = 'https://www.phineo.org/'
 
+Entry = namedtuple('Entry', ['id', 'title', 'url', 'target_group' ])
 
-def set_property():
-    pass
 
+def meta(func):
+    def wrapper(*args, **kwargs):
+        setattr(func,'meta',True)
+    return wrapper
 
 class Catalog:
     def __init__(self, log_level=logging.ERROR):
@@ -22,6 +26,7 @@ class Catalog:
         self.logger.setLevel(log_level)
         self.handler = logging.StreamHandler(sys.stdout)
         self.logger.addHandler(self.handler)
+        self.ids = []
 
     def build(self):
         count = 0
@@ -31,13 +36,16 @@ class Catalog:
             for project_url in self.get_projects(page):
                 project_id = hashlib.md5(project_url).hexdigest()
                 url = base_url + project_url
-                theme = self.themen(url)
-                # for extractor in self.get_extractors():
-                #     logging.info(f"Launching Extractor : {extractor.__name__}")
-                #     url = base_url + project_url
-                #     res = extractor(url)
+                for extractor in self.get_metadata_extractors():
+                    res = extractor(url)
+                    self.logger(f"Extractor : {extractor.__name__} : {res}")
+
 
         return count
+
+    def check_duplicated_ids(self):
+        len(self.ids) != len(set(self.ids))
+        return False
 
 
     def list_all_pages(self):
@@ -59,8 +67,8 @@ class Catalog:
                 lst.append(res)
         return lst
 
-    def get_extractors(self):
-        """some introspection needed ..."""
+    def get_metadata_extractors(self):
+        """TODO: Replace with introspection ..."""
         lst=[]
         lst.append(self.themen)
         lst.append(self.wirk_image)
@@ -71,7 +79,7 @@ class Catalog:
         lst.append(self.project_website)
         return lst
 
-    @set_property
+    @meta
     def themen(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(1) > dd > a"
         r = session.get(url)
@@ -79,7 +87,7 @@ class Catalog:
         self.logger.info(res)
         return res
 
-    @set_property
+    @meta
     def zielgruppe(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(2) > dd"
         r = session.get(url)
@@ -89,7 +97,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def standort(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(2) > div > dl:nth-child(1) > dd > a"
         r = session.get(url)
@@ -98,7 +106,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def reichweite(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(2) > div > dl:nth-child(2) > dd > a"
         r = session.get(url)
@@ -107,7 +115,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def auf_einen_blick(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(1) > p"
         r = session.get(url)
@@ -116,7 +124,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def wirk_image(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(1) > div > img"
         r = session.get(url)
@@ -124,7 +132,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def leistungs_image(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(2) > div > img"
         r = session.get(url)
@@ -132,7 +140,7 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def project_website(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div.subc.clearBox.defaultBox_01.leftStyle > ul > li:nth-child(3) > a"
         r = session.get(url)
@@ -141,14 +149,32 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    @set_property
+    @meta
     def title(self):
         pass
 
-    @set_property
+    @meta
     def long_description(self):
         pass
 
-    @set_property
+    @meta
     def project_id(self):
         pass
+
+    @meta
+    def data_source(self):
+        pass
+
+    @meta
+    def language(self):
+        pass
+
+    @meta
+    def project_image(self):
+        pass
+
+    ### FUTURE: Data integration -
+
+    ## Standard language for scaling up, alias  multilingual
+
+    ## TODO: use the name as key in the datastrecture...

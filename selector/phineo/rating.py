@@ -6,6 +6,7 @@ import cv2
 
 from selector.phineo.common import IMAGE_TYPE
 
+
 class LEISTUNGS_XCOORDS(Enum):
     VISION = 10
     LEISTUNGS_GREMIUM = 35
@@ -14,21 +15,24 @@ class LEISTUNGS_XCOORDS(Enum):
     FINANZIERUNGSKONZEPT = 105
     OFFENTLICHKEIT = 125
 
+
 # y coordinates
 leistungs_ycoords = [7, 25, 45, 60, 75]
+
 
 class WIRKUNGS_XCOORDS(Enum):
     ZEILE = 10
     KONZEPT = 30
     QUALITAET = 50
 
+
 wirkungs_ycoords = [7, 25, 45, 65, 77]
 
 
 class Rating:
     def __init__(self, log_level=logging.ERROR):
-        #self.img_path = image_path
-        #self.star = image_type
+        # self.img_path = image_path
+        # self.star = image_type
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(log_level)
         self.handler = logging.StreamHandler(sys.stdout)
@@ -41,8 +45,6 @@ class Rating:
         (thresh, bw) = cv2.threshold(gray, min_white, max_white, cv2.THRESH_BINARY)
         return bw
 
-    # def get_ratings(self):
-    #     return self.reputation
 
     def compute_ratings(self, data, image_type):
         if image_type == IMAGE_TYPE.LEISTUNG:

@@ -15,7 +15,7 @@ def test_zielgruppe():
     assert "Kinder & Jugendliche" == res[0]
 
 
-def test_standord():
+def test_standort():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
     parser = Catalog()
     res = parser.standort(url)
@@ -76,6 +76,7 @@ def test_teaser_text():
     res = catalog.teaser_text(url)
     print(res)
     assert res == "http://www.bkj.de"
+
 
 def test_get_extractors():
     catalog = Catalog()

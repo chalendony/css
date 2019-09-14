@@ -7,6 +7,7 @@ from random import random
 from selector.phineo.rating import Rating
 from requests_html import HTMLSession
 from selector.phineo.common import IMAGE_TYPE
+import imutils
 
 session = HTMLSession()
 
@@ -28,6 +29,7 @@ class Catalog:
         count = 0
         pages = self.list_all_pages()
         self.logger.debug(f"Total pages: {len(pages)}")
+        rater = Rating()
         for page in pages:
             for project_url in self.get_projects(page):
                 project_id = hashlib.md5(project_url.encode('utf-8')).hexdigest()
@@ -35,17 +37,17 @@ class Catalog:
                 for extractor in self.get_metadata_extractors():
                     res = extractor(url)
                     if extractor.__name__ == 'wirk_image':
-                        rating = Rating(base_url+res, IMAGE_TYPE.WIRK)
-                        self.logger.info(f"Extractor : {extractor.__name__} : {rating}")
+                        image = imutils.url_to_image(base_url + res)
+                        ratings = rater.compute_ratings(image, IMAGE_TYPE.WIRK)
+                        self.logger.info(f"Extractor : {extractor.__name__} : {ratings}")
                     if extractor.__name__ == 'leistungs_image':
-                        rating = Rating(base_url + res, IMAGE_TYPE.LEISTUNG)
-                        self.logger.info(f"Extractor : {extractor.__name__} : {rating}")
+                        image = imutils.url_to_image(base_url + res)
+                        ratings = rater.compute_ratings(image,IMAGE_TYPE.LEISTUNG)
+                        self.logger.info(f"Extractor : {extractor.__name__} : {ratings}")
                     else:
                         self.logger.info(f"Extractor : {extractor.__name__} : {res}")
                 self.logger.info(f"******************************************")
-
-
-        return count
+        return count ## TODO return dataframe
 
     def check_duplicated_ids(self):
         len(self.ids) != len(set(self.ids))

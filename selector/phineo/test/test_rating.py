@@ -1,10 +1,9 @@
-import pytest
-from pathlib import Path
-import cv2
 import os
-from phineo.rating import ProjectRating, LEISTUNGS_XCOORDS, leistungs_ycoords, WIRKUNGS_XCOORDS, wirkungs_ycoords
-from phineo.common import IMAGE_TYPE
-
+import cv2
+from selector.phineo.parser import Catalog
+from selector.phineo.common import IMAGE_TYPE
+from selector.phineo.rating import LEISTUNGS_XCOORDS, leistungs_ycoords
+from selector.phineo.rating import ProjectRating
 
 def test_check_image():
     image = cv2.imread(os.path.join('data','leistung.jpg'))

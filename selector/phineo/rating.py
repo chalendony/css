@@ -3,7 +3,7 @@ import sys
 from enum import Enum
 import os
 import cv2
-from phineo.common import IMAGE_TYPE
+from selector.phineo.common import IMAGE_TYPE
 
 class LEISTUNGS_XCOORDS(Enum):
     VISION = 10

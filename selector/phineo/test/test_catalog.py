@@ -4,49 +4,49 @@ from selector.phineo.catalog import Catalog
 def themen():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
     parser = Catalog()
-    res = parser.themen(url)
+    res = parser.category(url)
     assert "Gesundheit & Pflege" == res
 
 
 def test_zielgruppe():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
     parser = Catalog()
-    res = parser.zielgruppe(url)
+    res = parser.target_group(url)
     assert "Kinder & Jugendliche" == res[0]
 
 
 def test_standort():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
     parser = Catalog()
-    res = parser.standort(url)
+    res = parser.location(url)
     assert "Niedersachsen" == res
 
 
 def test_reichweite():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
     parser = Catalog()
-    res = parser.reichweite(url)
+    res = parser.geo_reach(url)
     assert "regional" == res
 
 
 def test_auf_einen_blick():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
     parser = Catalog()
-    res = parser.auf_einen_blick(url)
+    res = parser.mission(url)
     assert "Menschen" == res[0:8]
 
 
 def test_leistung_image():
     url = "https://www.phineo.org/projekte/details/dialog-demenz-im-pfaffenwinkel-demenzfreundliche-kommune"
     parser = Catalog()
-    res = parser.wirk_image(url)
+    res = parser.rating(url)
     assert ".jpg" == res[-4:]
 
 
 def test_wirk_image():
     url = "https://www.phineo.org/projekte/details/dialog-demenz-im-pfaffenwinkel-demenzfreundliche-kommune"
     parser = Catalog()
-    res = parser.wirk_image(url)
+    res = parser.rating(url)
     assert ".jpg" == res[-4:]
 
 
@@ -66,7 +66,7 @@ def test_count_details_pages():
 def test_website_project():
     url = "https://www.phineo.org/projekte/details/das-freiwillige-soziale-jahr-in-der-kultur?tx_phineoprojectslite_pi1%5Bpointer%5D=2&tx_phineoprojectslite_pi1%5Bpps%5D=10"
     catalog = Catalog()
-    res = catalog.project_website(url)
+    res = catalog.home_page(url)
     assert res == "http://www.bkj.de"
 
 

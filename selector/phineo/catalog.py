@@ -13,9 +13,32 @@ session = HTMLSession()
 
 PROJ_PER_PAGE = 10
 last_page = 25
-base_url = 'https://www.phineo.org/'
+base_url = "https://www.phineo.org/"
 
-Entry = namedtuple('Entry', ['id', 'title', 'url', 'target_group'])
+"catalog_home", "catalog_language", "catalog_name",
+# project_id = hashlib.md5(project_url.encode('utf-8')).hexdigest()
+# url = base_url + project_url
+# language = 'germany'
+# source = 'phineo' landing page
+# source_site = 'https://www.phineo.org/'
+
+Entry = namedtuple(
+    "Entry",
+    [
+        "id",
+        "name",
+        "tagline",
+        "mission",
+        "location",
+        "geo_reach",
+        "category",
+        "rating",
+        "key_visual",
+        "target_group",
+        "home_page",
+    ],
+)
+
 
 class Catalog:
     def __init__(self, log_level=logging.ERROR):
@@ -34,29 +57,30 @@ class Catalog:
 
             for project_url in self.get_projects(page):
 
-                project_id = hashlib.md5(project_url.encode('utf-8')).hexdigest()
+                id = hashlib.md5(project_url.encode("utf-8")).hexdigest()
                 url = base_url + project_url
-                language = 'germany'
-                source = 'phineo'
-                source_site = 'https://www.phineo.org/'
+                language = "germany"
+                source = "phineo"
+                source_site = "https://www.phineo.org/"
 
                 for extractor in self.get_metadata_extractors():
 
                     res = extractor(url)
 
-                    if extractor.__name__ == 'wirk_image':
+                    if extractor.__name__ == "wirk_image":
                         image = imutils.url_to_image(base_url + res)
                         ratings = rater.compute_ratings(image, IMAGE_TYPE.WIRK)
-                        self.logger.info(f"Extractor : {extractor.__name__} : {ratings}")
+                        self.logger.info(
+                            f"Extractor : {extractor.__name__} : {ratings}"
+                        )
                     else:
                         self.logger.info(f"Extractor : {extractor.__name__} : {res}")
                 self.logger.info(f"******************************************")
-        return count ## TODO return dataframe
+        return count  ## TODO return dataframe
 
     def check_duplicated_ids(self):
         len(self.ids) != len(set(self.ids))
         return False
-
 
     def list_all_pages(self):
         pages = []
@@ -78,21 +102,23 @@ class Catalog:
         return lst
 
     def get_metadata_extractors(self):
-        lst=[]
-        lst.append(self.themen)
-        lst.append(self.wirk_image)
-        lst.append(self.zielgruppe)
-        lst.append(self.standort)
-        lst.append(self.auf_einen_blick)
-        lst.append(self.project_website)
-        lst.append(self.title_main)
-        lst.append(self.title_sub)
-        lst.append(self.project_image)
+        lst = []
+
+        lst.append(self.name)
+        lst.append(self.tagline)
+        lst.append(self.mission)
+        lst.append(self.location)
+        lst.append(self.geo_reach)
+        lst.append(self.category)
+        lst.append(self.rating)
+        lst.append(self.key_visual)
+        lst.append(self.target_group)
+        lst.append(self.home_page)
         return lst
 
-#########################################################################
-    #@meta
-    def themen(self, url):
+    #########################################################################
+    # @meta
+    def category(self, url):
 
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(1) > dd > a"
         r = session.get(url)
@@ -100,8 +126,8 @@ class Catalog:
         self.logger.debug(res)
         return res
 
-    #@meta
-    def zielgruppe(self, url):
+    # @meta
+    def target_group(self, url):
         metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(2) > dd"
         r = session.get(url)
@@ -111,8 +137,8 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return metadata
 
-    #@meta
-    def standort(self, url):
+    # @meta
+    def location(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(2) > div > dl:nth-child(1) > dd > a"
         r = session.get(url)
         res = r.html.find(selector)
@@ -120,8 +146,8 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    #@meta
-    def reichweite(self, url):
+    # @meta
+    def geo_reach(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(2) > div > dl:nth-child(2) > dd > a"
         r = session.get(url)
         res = r.html.find(selector)
@@ -129,8 +155,8 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    #@meta
-    def auf_einen_blick(self, url):
+    # @meta
+    def mission(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(1) > p"
         r = session.get(url)
         res = r.html.find(selector)
@@ -138,15 +164,15 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    #@meta
-    def wirk_image(self, url):
+    # @meta
+    def rating(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(1) > div > img"
         r = session.get(url)
         res = r.html.find(selector)[0].attrs.get("src")  # get tags's attribute
         self.logger.debug(f"*************** {res}")
         return res
 
-    #@meta # omit for now ...
+    # @meta # omit for now ...
     def leistungs_image(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(2) > div > img"
         r = session.get(url)
@@ -154,8 +180,8 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return res
 
-    #@meta
-    def project_website(self, url):
+    # @meta
+    def home_page(self, url):
         metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div.subc.clearBox.defaultBox_01.leftStyle > ul > li:nth-child(3) > a"
         r = session.get(url)
@@ -165,10 +191,10 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return metadata
 
-    #@meta
-    def title_main(self,url):
+    # @meta
+    def name(self, url):
         metadata = None
-        selector = '#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h1'
+        selector = "#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h1"
         r = session.get(url)
         res = r.html.find(selector)
         if len(res) > 0:
@@ -176,10 +202,10 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return metadata
 
-    #@meta
-    def title_sub(self,url):
+    # @meta
+    def tagline(self, url):
         metadata = None
-        selector = '#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h2'
+        selector = "#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h2"
         r = session.get(url)
         res = r.html.find(selector)
         if len(res) > 0:
@@ -187,10 +213,10 @@ class Catalog:
         self.logger.debug(f"*************** {res}")
         return metadata
 
-    #@meta
-    def project_image(self, url):
+    # @meta
+    def key_visual(self, url):
         metadata = None
-        selector = '#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(2) > img'
+        selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(2) > img"
         r = session.get(url)
         res = r.html.find(selector)
         if len(res) > 0:
@@ -198,8 +224,8 @@ class Catalog:
         self.logger.debug(f"*************** {metadata}")
         return metadata
 
-    #@meta
+    # @meta
     def long_description(self):
         # TODO: Later
-        selector = '#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(4) > div.width_552.marginTop_12.marginRight_24 > div'
+        selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(4) > div.width_552.marginTop_12.marginRight_24 > div"
         pass

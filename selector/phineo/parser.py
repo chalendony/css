@@ -82,7 +82,6 @@ class Catalog:
     def leistungs_image(self,url):
         selector =  '#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(2) > div > img'
         r = session.get(url)
-        #name = 'img[src]'
         res = r.html.find(selector)[0].attrs.get('src') # get tags's attribute
         print(f"*************** {res}")
         return res
@@ -96,9 +95,6 @@ class Catalog:
         return pages
 
     def get_projects(self, url):
-        #selector = '#searchresults > div:nth-child(2) > div.teaserImage.leftStyle.width_232 > a'
-        # searchresults > div:nth-child(2) > div.teaserImage.leftStyle.width_232 > a
-        # searchresults
         lst = []
         r = session.get(url)
         for i in range(1,12):
@@ -108,12 +104,8 @@ class Catalog:
             if len(res) > 0:
                 ## !pull element out of list and get the elements attributes...
                 res = res[0].attrs.get('href')
-                print(f"{res}")
                 lst.append(res)
-        print(f"*********************")
         return lst
-
-
 
     def details(self):
         count = 0
@@ -121,27 +113,25 @@ class Catalog:
         pages = self.list_all_pages()
         print(f"Total pages: {len(pages)}")
         for page in pages:
-            print(page)
-
-            num_projects_on_page = self.get_projects(page)
-            #print(f"Number Projects on Page {len(num_projects_on_page)}")
-            # for project in num_projects_on_page:
-            #     selector = f"#searchresults > div:nth-child({project}) > div.teaserText.leftStyle.width_448.marginRight_24 > a"
-            # searchresults > div.searchBox_01 > div.teaserText.leftStyle.width_448.marginRight_24 > a
-            #     r = session.get(page)
-            #     res = r.html.find(selector)
-            #     ## parser all details
-            #count = count + len(num_projects_on_page)
-
-        return  count
+            projects = self.get_projects(page)
+            print(f"Number projects on page: {len(projects)}")
+            count = count + len(projects)
+        return count
 
 
-    def website_project(self):
+    def project_website(self,url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div.subc.clearBox.defaultBox_01.leftStyle > ul > li:nth-child(3) > a"
-        pass
+        r = session.get(url)
+        res = r.html.find(selector)[0].attrs.get('href')
+        print(f"*************** {res}")
+        return res
 
-## teaser text
-## #searchresults > div:nth-child(2) > div.teaserText.leftStyle.width_448.marginRight_24 > p
+    def teaser_text(self,url):
+        selector = 'searchresults > div:nth-child(2) > div.teaserText.leftStyle.width_448.marginRight_24 > p'
+        r = session.get(url)
+        res = r.html.find(selector)
+        print(f"*************** {res}")
+        return res
 
 
 

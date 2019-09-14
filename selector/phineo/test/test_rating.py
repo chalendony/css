@@ -1,5 +1,6 @@
 import os
 import cv2
+import imutils
 
 from selector.phineo.common import IMAGE_TYPE
 from selector.phineo.rating import (
@@ -68,6 +69,17 @@ def test_ratings_leistung_offentlich():
 
 
 def test_ratings_wirk_konzept():
+    star = Rating(os.path.join("data", "wirk_img.jpg"), IMAGE_TYPE.WIRK)
+    rows = WIRKUNGS_XCOORDS
+    cols = wirkungs_ycoords
+    ratings = star.get_ratings()
+    assert ratings[WIRKUNGS_XCOORDS.KONZEPT] == 5
+
+
+def test_read_file_from_url():
+    url = 'https://www.phineo.org/typo3temp/GB/9ed448bd3f.jpg'
+    img = imutils.url_to_image(url)
+
     star = Rating(os.path.join("data", "wirk_img.jpg"), IMAGE_TYPE.WIRK)
     rows = WIRKUNGS_XCOORDS
     cols = wirkungs_ycoords

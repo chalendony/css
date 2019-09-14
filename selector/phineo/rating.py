@@ -6,7 +6,6 @@ import cv2
 
 from selector.phineo.common import IMAGE_TYPE
 
-
 class LEISTUNGS_XCOORDS(Enum):
     VISION = 10
     LEISTUNGS_GREMIUM = 35
@@ -15,16 +14,13 @@ class LEISTUNGS_XCOORDS(Enum):
     FINANZIERUNGSKONZEPT = 105
     OFFENTLICHKEIT = 125
 
-
 # y coordinates
 leistungs_ycoords = [7, 25, 45, 60, 75]
-
 
 class WIRKUNGS_XCOORDS(Enum):
     ZEILE = 10
     KONZEPT = 30
     QUALITAET = 50
-
 
 wirkungs_ycoords = [7, 25, 45, 65, 77]
 
@@ -47,6 +43,7 @@ class Rating:
             self.reputation = self.compute_ratings(rows, cols)
 
     def to_black_white(self):
+        self.logger.info(f"The image path...{self.img_path}")
         image = cv2.imread(self.img_path)
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         min_white = 175

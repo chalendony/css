@@ -1,8 +1,9 @@
 import logging
 import sys
 from enum import Enum
-import os
+
 import cv2
+
 from selector.phineo.common import IMAGE_TYPE
 
 

@@ -1,12 +1,8 @@
 import logging
-import os
 import sys
-from string import Template
 
-from bs4 import BeautifulSoup
-import requests
-from requests_html import HTML
 from requests_html import HTMLSession
+
 session = HTMLSession()
 
 PROJ_PER_PAGE = 10
@@ -20,7 +16,6 @@ class Catalog:
         self.handler = logging.StreamHandler(sys.stdout)
         self.logger.addHandler(self.handler)
         self.metadata = None
-
 
     def themen(self, url):
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(1) > dd > a"

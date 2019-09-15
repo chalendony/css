@@ -28,7 +28,16 @@ This metadata will be properly implemented in a future version of the code l
 * target_group: list: for whom the project is relevant
 * home_page : string : the url for the project 
                 
-## Loading Catalog               
+## Loading Catalog     
+```buildoutcfg
+ import json
+ with open(filename) as json_file:
+        data = json.load(json_file)
+         .... 
+```          
+   
+## TODOs
 
-
+* read rating image with stars when all rating categories are not present 
+* read rating image for bar char
 

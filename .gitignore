@@ -1,6 +1,7 @@
 .idea
 .pytest_cache
 .DS_Store/
+phineo.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

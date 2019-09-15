@@ -7,7 +7,7 @@ import cv2
 from selector.phineo.common import IMAGE_TYPE
 
 
-class LEISTUNGS_XCOORDS(Enum):
+class LEISTUNGS(Enum):
     VISION = 10
     LEISTUNGS_GREMIUM = 35
     AUFSICHTS_GREMIUM = 60
@@ -20,7 +20,7 @@ class LEISTUNGS_XCOORDS(Enum):
 leistungs_ycoords = [7, 25, 45, 60, 75]
 
 
-class WIRKUNGS_XCOORDS(Enum):
+class WIRKUNGS(Enum):
     ZEILE = 10
     KONZEPT = 30
     QUALITAET = 50
@@ -46,10 +46,10 @@ class Rating:
 
     def compute_ratings(self, data, image_type):
         if image_type == IMAGE_TYPE.LEISTUNG:
-            rows = LEISTUNGS_XCOORDS
+            rows = LEISTUNGS
             cols = leistungs_ycoords
         if image_type == IMAGE_TYPE.WIRK:
-            rows = WIRKUNGS_XCOORDS
+            rows = WIRKUNGS
             cols = wirkungs_ycoords
         bw = self.to_black_white(data)
         res = {}
@@ -59,5 +59,5 @@ class Rating:
                 pixel = bw[x.value, y]
                 if pixel == 0:
                     rating = rating + 1
-            res[x] = rating
+            res[x.__str__().lower()] = rating
         return res

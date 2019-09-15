@@ -1,5 +1,5 @@
 from selector.phineo.catalog import Catalog
-
+import json
 
 def themen():
     url = "https://www.phineo.org/projekte/details/jung-alt-begegnung-von-kindern-und-alten-menschen?tx_phineoprojectslite_pi1%5Bpointer%5D=5&tx_phineoprojectslite_pi1%5Bpps%5D=25"
@@ -82,3 +82,9 @@ def test_get_extractors():
     catalog = Catalog()
     res = catalog.get_metadata_extractors()
     assert len(res) == 7
+
+def test_read_catalog():
+    filename =  "/Users/stewarta/repos/css/selector/phineo/scripts/phineo.json"
+    with open(filename) as json_file:
+        data = json.load(json_file)
+    assert len(data) == 250

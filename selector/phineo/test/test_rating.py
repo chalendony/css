@@ -4,9 +4,9 @@ import imutils
 
 from selector.phineo.common import IMAGE_TYPE
 from selector.phineo.rating import (
-    LEISTUNGS_XCOORDS,
+    LEISTUNGS,
     leistungs_ycoords,
-    WIRKUNGS_XCOORDS,
+    WIRKUNGS,
     wirkungs_ycoords,
     Rating,
 )
@@ -21,73 +21,73 @@ def test_check_image():
 
 
 def test_ratings_vision():
-    rows = LEISTUNGS_XCOORDS
+    rows = LEISTUNGS
     cols = leistungs_ycoords
     image = cv2.imread(os.path.join("data", "leistung.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.LEISTUNG)
-    assert ratings[LEISTUNGS_XCOORDS.VISION] == 4
+    assert ratings[LEISTUNGS.VISION] == 4
 
 
 def test_ratings_leistung():
-    rows = LEISTUNGS_XCOORDS
+    rows = LEISTUNGS
     cols = leistungs_ycoords
     image = cv2.imread(os.path.join("data", "leistung.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.LEISTUNG)
-    assert ratings[LEISTUNGS_XCOORDS.LEISTUNGS_GREMIUM] == 4
+    assert ratings[LEISTUNGS.LEISTUNGS_GREMIUM] == 4
 
 
 def test_ratings_aufsichts():
-    rows = LEISTUNGS_XCOORDS
+    rows = LEISTUNGS
     cols = leistungs_ycoords
     image = cv2.imread(os.path.join("data", "leistung.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.LEISTUNG)
-    assert ratings[LEISTUNGS_XCOORDS.AUFSICHTS_GREMIUM] == 3
+    assert ratings[LEISTUNGS.AUFSICHTS_GREMIUM] == 3
 
 
 def test_ratings_leistung_finanzen():
-    rows = LEISTUNGS_XCOORDS
+    rows = LEISTUNGS
     cols = leistungs_ycoords
     image = cv2.imread(os.path.join("data", "leistung.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.LEISTUNG)
-    assert ratings[LEISTUNGS_XCOORDS.FINANZEN] == 3
+    assert ratings[LEISTUNGS.FINANZEN] == 3
 
 
 def test_ratings_leistung_finanzierungs():
-    rows = LEISTUNGS_XCOORDS
+    rows = LEISTUNGS
     cols = leistungs_ycoords
     image = cv2.imread(os.path.join("data", "leistung.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.LEISTUNG)
-    assert ratings[LEISTUNGS_XCOORDS.FINANZIERUNGSKONZEPT] == 5
+    assert ratings[LEISTUNGS.FINANZIERUNGSKONZEPT] == 5
 
 
 def test_ratings_leistung_offentlich():
-    rows = LEISTUNGS_XCOORDS
+    rows = LEISTUNGS
     cols = leistungs_ycoords
     image = cv2.imread(os.path.join("data", "leistung.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.LEISTUNG)
-    assert ratings[LEISTUNGS_XCOORDS.OFFENTLICHKEIT] == 4
+    assert ratings[LEISTUNGS.OFFENTLICHKEIT] == 4
 
 
 def test_ratings_wirk_konzept():
-    rows = WIRKUNGS_XCOORDS
+    rows = WIRKUNGS
     cols = wirkungs_ycoords
     image = cv2.imread(os.path.join("data", "wirk_img.jpg"))
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.WIRK)
-    assert ratings[WIRKUNGS_XCOORDS.KONZEPT] == 5
+    assert ratings[WIRKUNGS.KONZEPT] == 5
 
 
 def test_read_file_from_url():
-    rows = WIRKUNGS_XCOORDS
+    rows = WIRKUNGS
     cols = wirkungs_ycoords
     url = "https://www.phineo.org/typo3temp/GB/9ed448bd3f.jpg"
     image = imutils.url_to_image(url)
     scale = Rating()
     ratings = scale.compute_ratings(image, IMAGE_TYPE.WIRK)
-    assert ratings[WIRKUNGS_XCOORDS.KONZEPT] == 4
+    assert ratings[WIRKUNGS.KONZEPT] == 4

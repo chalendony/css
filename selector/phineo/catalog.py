@@ -10,7 +10,10 @@ from requests_html import HTMLSession
 from selector.phineo.common import IMAGE_TYPE
 from selector.phineo.rating import Rating
 
+import json
+
 session = HTMLSession()
+
 
 PROJ_PER_PAGE = 10
 last_page = 25
@@ -38,20 +41,23 @@ Entry = namedtuple(
     ],
 )
 
-class Catalog:
 
+class Catalog:
     def __init__(self, log_level=logging.ERROR):
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(log_level)
         self.handler = logging.StreamHandler(sys.stdout)
         self.logger.addHandler(self.handler)
         self.ids = []
+        self.COUNTER = 0
+        self.LIMIT = 5
 
     def build(self):
         cat = []
         pages = self.list_all_pages()
         self.logger.debug(f"Total pages: {len(pages)}")
         rater = Rating()
+        self.logger.info(f"Building Catalog .....")
         for page in pages:
             for project_url in self.get_projects(page):
                 id_m = hashlib.md5(project_url.encode("utf-8")).hexdigest()
@@ -68,14 +74,33 @@ class Catalog:
                 key_visual_m = self.key_visual(url)
                 target_group_m = self.target_group(url)
                 home_page_m = self.home_page(url)
-
-                e = Entry(id, name_m,tagline_m,mission_m,location_m,geo_reach_m,category_m,rating_m,key_visual_m,target_group_m,home_page_m)
+                e = {
+                    "id": id_m,
+                    "name": name_m,
+                    "tagline": tagline_m,
+                    "mission": mission_m,
+                    "location": location_m,
+                    "goe_reach": geo_reach_m,
+                    "category": category_m,
+                    "rating": rating_m,
+                    "key_visual": key_visual_m,
+                    "target_group": target_group_m,
+                    "home_page": home_page_m,
+                }
                 cat.append(e)
+                #self.COUNTER = self.COUNTER + 1
+                #if self.COUNTER == self.LIMIT:
+                #    self.trydump(cat)
+        self.logger.info(f"Catalog built with {len(cat)} records")
         return cat
 
-    def check_duplicated_ids(self):
-        len(self.ids) != len(set(self.ids))
-        return False
+    def trydump(self, cat):
+        with open('phineo.json', 'w') as f:
+            f.write(json.dumps(cat))
+        exit(1)
+
+    def is_duplicated_ids(self):
+        return not len(self.ids) == len(set(self.ids))
 
     def list_all_pages(self):
         pages = []
@@ -113,12 +138,14 @@ class Catalog:
     #########################################################################
     # @meta
     def category(self, url):
-
+        metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(1) > dd > a"
         r = session.get(url)
-        res = r.html.find(selector)[0].text
+        res = r.html.find(selector)
         self.logger.debug(res)
-        return res
+        if len(res) > 0:
+            metadata = res[0].text
+        return metadata
 
     # @meta
     def target_group(self, url):
@@ -126,9 +153,9 @@ class Catalog:
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(1) > div > dl:nth-child(2) > dd"
         r = session.get(url)
         res = r.html.find(selector)
+        self.logger.debug(f"*************** {res}")
         if len(res) > 0:
             metadata = res[0].text.split(",")
-        self.logger.debug(f"*************** {res}")
         return metadata
 
     # @meta
@@ -142,37 +169,47 @@ class Catalog:
 
     # @meta
     def geo_reach(self, url):
+        metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div:nth-child(2) > div > dl:nth-child(2) > dd > a"
         r = session.get(url)
         res = r.html.find(selector)
-        res = res[0].text
         self.logger.debug(f"*************** {res}")
-        return res
+        if len(res) > 0:
+            metadata = res[0].text
+        return metadata
 
     # @meta
     def mission(self, url):
+        metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(1) > p"
         r = session.get(url)
         res = r.html.find(selector)
-        res = res[0].text
         self.logger.debug(f"*************** {res}")
-        return res
+        if len(res) > 0:
+            metadata = res[0].text
+        return metadata
 
     # @meta
     def rating(self, url):
+        metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(1) > div > img"
         r = session.get(url)
-        res = r.html.find(selector)[0].attrs.get("src")  # get tags's attribute
+        res = r.html.find(selector)
         self.logger.debug(f"*************** {res}")
-        return res
+        if len(res) > 0:
+            metadata = res[0].attrs.get("src")  # get tags's attribute
+        return metadata
 
     # @meta # omit for now ...
     def leistungs_image(self, url):
+        metadata = None
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(5) > div.leftStyle.marginTop_12 > div:nth-child(2) > div > img"
         r = session.get(url)
-        res = r.html.find(selector)[0].attrs.get("src")  # get tags's attribute
+        res = r.html.find(selector)
         self.logger.debug(f"*************** {res}")
-        return res
+        if len(res) > 0:
+            metadata = res[0].attrs.get("src")  # get tags's attribute
+        return metadata
 
     # @meta
     def home_page(self, url):
@@ -180,9 +217,9 @@ class Catalog:
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.leftStyle.marginTop_16.paddingBottom_16 > div.subc.width_472.leftStyle > div.subc.clearBox.defaultBox_01.leftStyle > ul > li:nth-child(3) > a"
         r = session.get(url)
         res = r.html.find(selector)
+        self.logger.debug(f"*************** {res}")
         if len(res) > 0:
             metadata = res[0].attrs.get("href")
-        self.logger.debug(f"*************** {res}")
         return metadata
 
     # @meta
@@ -191,9 +228,9 @@ class Catalog:
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h1"
         r = session.get(url)
         res = r.html.find(selector)
+        self.logger.debug(f"*************** {res}")
         if len(res) > 0:
             metadata = res[0].text
-        self.logger.debug(f"*************** {res}")
         return metadata
 
     # @meta
@@ -202,9 +239,9 @@ class Catalog:
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div.dottedLine.color_02.paddingBottom_12 > h2"
         r = session.get(url)
         res = r.html.find(selector)
+        self.logger.debug(f"*************** {res}")
         if len(res) > 0:
             metadata = res[0].text
-        self.logger.debug(f"*************** {res}")
         return metadata
 
     # @meta
@@ -213,9 +250,9 @@ class Catalog:
         selector = "#c9293 > div > div > div.marginLeft_08 > div > div:nth-child(3) > div.width_552.marginTop_12.marginRight_24 > div:nth-child(2) > img"
         r = session.get(url)
         res = r.html.find(selector)
+        self.logger.debug(f"*************** {res}")
         if len(res) > 0:
             metadata = res[0].attrs.get("src")
-        self.logger.debug(f"*************** {metadata}")
         return metadata
 
     # @meta

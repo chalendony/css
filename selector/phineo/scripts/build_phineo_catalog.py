@@ -9,7 +9,8 @@ import json
 if __name__ == "__main__":
     catalog = Catalog(log_level=logging.INFO)
     cat = catalog.build()
-    with open('phineo.json', 'w') as f:
+    filename = '/Users/stewarta/repos/css/data/phineo.json'
+    with open(filename, 'w') as f:
         f.write(json.dumps(cat))
 
 

@@ -84,7 +84,7 @@ def test_get_extractors():
     assert len(res) == 7
 
 def test_read_catalog():
-    filename =  "/Users/stewarta/repos/css/selector/phineo/scripts/phineo.json"
+    filename = '/Users/stewarta/repos/css/data/phineo.json'
     with open(filename) as json_file:
         data = json.load(json_file)
     assert len(data) == 250
